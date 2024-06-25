@@ -1,0 +1,93 @@
+*.{$DOMAIN} {
+	tls {
+		dns ovh {
+			endpoint {$OVH_ENDPOINT}
+			application_key {$OVH_APPLICATION_KEY}
+			application_secret {$OVH_APPLICATION_SECRET}
+			consumer_key {$OVH_CONSUMER_KEY}
+		}
+	}
+	
+	@nextcloud host nc.{$DOMAIN}
+	handle @nextcloud {
+		redir /.well-known/carddav /remote.php/dav 301
+		redir /.well-known/caldav /remote.php/dav 301
+		
+		header {
+			enable HSTS
+			Strict-Transport-Security max-age=31536000;
+		}
+
+		# .htaccess / data / config / ... shouldn't be accessible from outside
+		@forbidden {
+			path /.htaccess
+			path /data/*
+			path /config/*
+			path /db_structure
+			path /.xml
+			path /README
+			path /3rdparty/*
+			path /lib/*
+			path /templates/*
+			path /occ
+			path /console.php
+		}
+		respond @forbidden 404
+
+		root * /var/www/html
+		php_fastcgi localhost:9000
+		file_server
+	}
+	
+	# @collabora host collabora.{$DOMAIN}
+	# handle @collabora {
+	#	 encode gzip
+  	#	 reverse_proxy localhost:9980
+	# }
+
+	@vaultwarden host vw.{$DOMAIN}
+	handle @vaultwarden {
+		# This setting may have compatibility issues with some browsers
+		# (e.g., attachment downloading on Firefox). Try disabling this
+		# if you encounter issues.
+		encode zstd gzip
+
+		# Uncomment to improve security (WARNING: only use if you understand the implications!)
+		# If you want to use FIDO2 WebAuthn, set X-Frame-Options to "SAMEORIGIN" or the Browser will block those requests
+		# header / {
+		#	# Enable HTTP Strict Transport Security (HSTS)
+		#	Strict-Transport-Security "max-age=31536000;"
+		#	# Disable cross-site filter (XSS)
+		#	X-XSS-Protection "0"
+		#	# Disallow the site to be rendered within a frame (clickjacking protection)
+		#	X-Frame-Options "DENY"
+		#	# Prevent search engines from indexing (optional)
+		#	X-Robots-Tag "noindex, nofollow"
+		#	# Disallow sniffing of X-Content-Type-Options
+		#	X-Content-Type-Options "nosniff"
+		#	# Server name removing
+		#	-Server
+		#	# Remove X-Powered-By though this shouldn't be an issue, better opsec to remove
+		#	-X-Powered-By
+		#	# Remove Last-Modified because etag is the same and is as effective
+		#	-Last-Modified
+		# }
+
+		# Uncomment to allow access to the admin interface only from local networks
+		# import admin_redir
+
+		# Proxy everything to Rocket
+		# if located at a sub-path the reverse_proxy line will look like:
+		#   reverse_proxy /subpath/* <SERVER>:80
+		reverse_proxy localhost:9990 {
+			# Send the true remote IP to Rocket, so that Vaultwarden can put this in the
+			# log, so that fail2ban can ban the correct IP.
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	handle {
+		abort
+	}
+
+}
