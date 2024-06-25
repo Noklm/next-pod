@@ -1,4 +1,7 @@
+# Next-Pod
+The idea is to have an entire working Nextcloud instance behind a Caddy reverse proxy using only DNS challenge. Working together in a podman pod as rootless containers.
 
+## Misc
 Allow rootless Podman containers to bind to ports >= 443:
 https://github.com/containers/podman/blob/main/rootless.md
 ```sh
