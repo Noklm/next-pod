@@ -10,8 +10,8 @@
 	
 	@nextcloud host nc.{$DOMAIN}
 	handle @nextcloud {
-		redir /.well-known/carddav /remote.php/dav 301
-		redir /.well-known/caldav /remote.php/dav 301
+		redir /.well-known/carddav /remote.php/dav/ 301
+		redir /.well-known/caldav /remote.php/dav/ 301
 		
 		header {
 			enable HSTS
