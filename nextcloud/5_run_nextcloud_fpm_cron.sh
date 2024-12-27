@@ -5,4 +5,4 @@ podman run -d \
     --pod nextcloud-pod \
     --restart always \
     --mount type=volume,source=nextcloud,target=/var/www/html,relabel=shared \
-    nextcloud:production-fpm /cron.sh
+    nextcloud:30.0-fpm /cron.sh

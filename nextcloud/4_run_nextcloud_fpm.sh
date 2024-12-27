@@ -12,4 +12,4 @@ podman run -d \
     --secret postgres_user,type=env,target=POSTGRES_USER \
     --secret postgres_password,type=env,target=POSTGRES_PASSWORD \
     --mount type=volume,source=nextcloud,target=/var/www/html,relabel=shared \
-    nextcloud:production-fpm
+    nextcloud:30.0-fpm

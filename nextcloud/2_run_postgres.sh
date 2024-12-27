@@ -8,4 +8,4 @@ podman run -d \
     --secret postgres_user,type=env,target=POSTGRES_USER \
     --secret postgres_password,type=env,target=POSTGRES_PASSWORD \
     --mount type=volume,source=nextcloud-pg-db,target=/var/lib/postgresql/data,relabel=private \
-    postgres:latest
+    postgres:16.6-alpine # Keep postgres version 16 incompatible with version 17

@@ -1,4 +1,4 @@
-*.{$DOMAIN} {
+(default_tls) {
 	tls {
 		dns ovh {
 			endpoint {$OVH_ENDPOINT}
@@ -7,7 +7,10 @@
 			consumer_key {$OVH_CONSUMER_KEY}
 		}
 	}
-	
+}
+
+*.{$DOMAIN} {
+	import default_tls
 	@nextcloud host nc.{$DOMAIN}
 	handle @nextcloud {
 		redir /.well-known/carddav /remote.php/dav/ 301
@@ -35,7 +38,7 @@
 		respond @forbidden 404
 
 		root * /var/www/html
-		php_fastcgi localhost:9000
+		php_fastcgi host.containers.internal:9000
 		file_server
 	}
 	
@@ -79,7 +82,7 @@
 		# Proxy everything to Rocket
 		# if located at a sub-path the reverse_proxy line will look like:
 		#   reverse_proxy /subpath/* <SERVER>:80
-		reverse_proxy localhost:9990 {
+		reverse_proxy host.containers.internal:9990 {
 			# Send the true remote IP to Rocket, so that Vaultwarden can put this in the
 			# log, so that fail2ban can ban the correct IP.
 			header_up X-Real-IP {remote_host}
@@ -91,3 +94,21 @@
 	}
 
 }
+
+{$DOMAIN} {
+	import default_tls
+	redir https://www.{$DOMAIN}
+}
+
+# mqtt.{$DOMAIN} {
+# 	tls {
+# 		dns ovh {
+# 			endpoint {$OVH_ENDPOINT}
+# 			application_key {$OVH_APPLICATION_KEY}
+# 			application_secret {$OVH_APPLICATION_SECRET}
+# 			consumer_key {$OVH_CONSUMER_KEY}
+# 		}
+# 		protocols tls1.2 tls1.3
+# 		ciphers TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+# 	}
+# }

@@ -1,1 +1,5 @@
-secrets
+secrets/*.txt
+collabora/*
+*.txt
+backups/
+mosquitto.conf
