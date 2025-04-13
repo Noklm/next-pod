@@ -1,3 +1,6 @@
 #!/bin/bash
 
-podman pod create --publish 10000:10000 nextcloud-pod
+podman pod create \
+    --publish 9000:9000 \
+    --network slirp4netns nextcloud-pod
+    
